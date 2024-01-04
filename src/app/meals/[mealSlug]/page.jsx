@@ -28,7 +28,7 @@ export default function MealDetailsPage({ params }) {
     notFound();
   }
 
-  meal.instructions = meal.instructions.replace(/\n/g, "<br />");
+  meal.instructions = meal.instructions.replace(/\n/g, "<br />"); //this is to insert the break when a new line is there.
 
   return (
     <>
