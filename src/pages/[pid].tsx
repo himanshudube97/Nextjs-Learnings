@@ -3,6 +3,12 @@ import { getFeaturedEvents } from "../../dummy-data";
 import fs from "fs/promises";
 export default function ProductDetailPage(props: any) {
   const { loadedProduct } = props;
+
+  //always use fallback state as data is being fetched and it takes tiem.
+ //or we can set fallback: "blocking", hence we will not need this as page will render only after data and page has been prepared and fetched.
+  if(!loadedProduct){  
+    return <p>loading....</p>
+  }
   return (
     <div>
       <>
@@ -48,12 +54,18 @@ export async function getStaticPaths() {
   return {
     paths: [
       { params: { pid: "p1" } }, //This function and values tell Next js that it needs to prerender the pages 3 times with there 3 values. Means our getStaticProps function will run 3 times during build with the 3 ids insdide the paths.
-      { params: { pid: "p2" } },
-      { params: { pid: "p3" } },
+      // { params: { pid: "p2" } },
+      // { params: { pid: "p3" } },
     ],
-    fallback: false, 
+    fallback: true, 
     /**
      * Use of fallback true.
+     * so if sites like amazon have 1000 product listed, this will be very heavy here. because all 1000 pages will be pre generated during build.
+     * which is not great as many pages or products are not even checked.
+     * so FALLBACK:true, just tell nextjs that pre render those pages that are mentioned in thhe path.
+     * and rest all proudcts can be rendered on go.
+     * SO most ACTIVE OR MOST VISITED PAGES are placed here, and if there are not so , then they are generated on go.
+     * if fallback is false, and i didnt mention the ids, it will throw error, as it is considering page to be there prefetched.
      */
   };
 }
