@@ -28,7 +28,9 @@ export async function getStaticProps(context: any) {
     const data = await fs.readFile("src/pages/events/dummy-backend.json");
     const jsonData = JSON.parse(data.toString());
     const product = jsonData.products.find((product: { id: any; }) => product.id === productId);
-
+ if(!product){
+  return {notFound: true}
+ }
     if (jsonData.products.length === 0) {
       return { notFound: true };
     }
