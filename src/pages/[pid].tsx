@@ -1,28 +1,27 @@
 import { json } from "stream/consumers";
 import { getFeaturedEvents } from "../../dummy-data";
 import fs from "fs/promises";
-import Link from "next/link";
-export default function Home({ products }: any) {
+export default function ProductDetailPage(props: any) {
+  const { loadedProduct } = props;
   return (
     <div>
-      {products?.map((product: any) => {
-        return (
-          <Link key={product.id} href={`/${product.id}`}>
-            {" "}
-            <li>{product.title}</li>{" "}
-          </Link>
-        );
-      })}
+      <>
+        <h1>{loadedProduct.title}</h1>
+        <h1>{loadedProduct.description}</h1>
+      </>
     </div>
   );
 }
 
-export async function getStaticProps() {
-
-
+//using getStaticProps is saying to nextjs, that i want to prerender this page in advance.
+export async function getStaticProps(context: any) {
+  console.log(context, 'conte')
+  const { params } = context;
+  const productId = params?.pid;
   try {
     const data = await fs.readFile("src/pages/events/dummy-backend.json");
     const jsonData = JSON.parse(data.toString());
+    const product = jsonData.products.find((product: { id: any; }) => product.id === productId);
 
     if (jsonData.products.length === 0) {
       return { notFound: true };
@@ -30,7 +29,7 @@ export async function getStaticProps() {
 
     return {
       props: {
-        products: jsonData.products,
+        loadedProduct: product,
       },
       // revalidate: 60, //when i do npm build this page is formed on my machine, and becomes a static page, so when we deploy this on aws or any other server, it is still a static page, so this option rerenders the whole page every 60 seconds in order to make this page udpated and fresh af.
       // notfound: false,
@@ -40,6 +39,23 @@ export async function getStaticProps() {
     console.log(error, "error");
     return;
   }
+}
+
+/**
+ *  PROBLEM IS NEXT.JS DOSENT KNOW WHICH INFO SHOULD BE HERE, THE PID IS DYNAMIC, SO WHICH ID SHOULD BE THERE.
+ */
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { pid: "p1" } }, //This function and values tell Next js that it needs to prerender the pages 3 times with there 3 values. Means our getStaticProps function will run 3 times during build with the 3 ids insdide the paths.
+      { params: { pid: "p2" } },
+      { params: { pid: "p3" } },
+    ],
+    fallback: false, 
+    /**
+     * Use of fallback true.
+     */
+  };
 }
 
 //here getstatic prop is a async function to call an api and get data.
