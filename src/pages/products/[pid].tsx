@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import { getFeaturedEvents } from "../../dummy-data";
+import { getFeaturedEvents } from "../../../dummy-data";
 import fs from "fs/promises";
 export default function ProductDetailPage(props: any) {
   const { loadedProduct } = props;

@@ -7,7 +7,7 @@ export default function Home({ products }: any) {
     <div>
       {products?.map((product: any) => {
         return (
-          <Link key={product.id} href={`/${product.id}`}>
+          <Link key={product.id} href={`/products/${product.id}`}>
             {" "}
             <li>{product.title}</li>{" "}
           </Link>
